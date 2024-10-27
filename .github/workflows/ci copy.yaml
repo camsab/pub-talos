@@ -1,4 +1,4 @@
-name: Talos Image
+name: Talos RK Images
 
 on:
   workflow_dispatch:
