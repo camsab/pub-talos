@@ -31,11 +31,11 @@ jobs:
           driver-opts: |
             namespace=actions-runner
             replicas=1
-            nodeselector="model=rk1"
+            nodeselector=model=rk1
             limits.memory=2G
             limits.ephemeral-storage=1G
 
-      - name: Login to quay Container Registry
+      - name: Login to ghcr Container Registry
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
@@ -67,7 +67,7 @@ jobs:
           TAG: ${{ env.PUBLISH_TAG }}
           TAG_SUFFIX: "-nosbclayer"
           PKG_KERNEL: ghcr.io/nberlee/kernel:${{ env.KERNEL_TAG }}
-          #USERNAME: ${{ env.USER }}
+          USERNAME: ${{ github.actor }}
           PLATFORM: linux/arm64
           PROGRESS: plain
           CI_ARGS: "--cache-from=ghcr.io/${{ github.actor }}/installer:cache --cache-to=ghcr.io/${{ github.actor }}/installer:cache"
@@ -78,7 +78,7 @@ jobs:
           PUSH: '1'
           TAG: ${{ env.PUBLISH_TAG }}
           PKG_KERNEL: ghcr.io/nberlee/kernel:${{ env.KERNEL_TAG }}
-          #USERNAME: ${{ env.USER }}
+          USERNAME: ${{ github.actor }}
           PLATFORM: linux/arm64,linux/amd64
           INSTALLER_ARCH: arm64
           PROGRESS: plain
