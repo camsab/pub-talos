@@ -68,7 +68,7 @@ jobs:
           #USERNAME: ${{ github.actor }}
           PLATFORM: linux/arm64
           PROGRESS: plain
-          CI_ARGS: "--cache-from=${{ env.REGISTRY}}/${{ github.actor }}/installer:cache --cache-to=${{ env.REGISTRY}}/${{ github.actor }}/installer:cache"
+          CI_ARGS: "--cache-from=${{ env.REGISTRY}}/${{ env.USERNAME}}/installer:cache --cache-to=${{ env.REGISTRY}}/${{ env.USERNAME}}/installer:cache"
 
       - name: Build and push Talos imager image
         run: make imager
@@ -80,7 +80,7 @@ jobs:
           PLATFORM: linux/arm64,linux/amd64
           INSTALLER_ARCH: arm64
           PROGRESS: plain
-          CI_ARGS: "--cache-from=${{ env.REGISTRY}}/${{ github.actor }}/imager:cache --cache-to=${{ env.REGISTRY}}/${{ github.actor }}/imager:cache"
+          CI_ARGS: "--cache-from=${{ env.REGISTRY}}/${{ env.USERNAME}}/imager:cache --cache-to=${{ env.REGISTRY}}/${{ env.USERNAME}}/imager:cache"
 
       - name: release-notes
         if: startsWith(github.ref, 'refs/tags/')
@@ -105,19 +105,19 @@ jobs:
           TAG: ${{ env.PUBLISH_TAG }}
           PLATFORM: linux/arm64
           PROGRESS: plain
-          IMAGER_ARGS: "--base-installer-image ${{ env.REGISTRY}}//${{ github.actor }}/installer:${{ env.PUBLISH_TAG }}-nosbclayer --system-extension-image ghcr.io/nberlee/rk3588:${{ env.RK3588_TAG }} --overlay-image ghcr.io//${{ github.actor }}/sbc-turingrk1:${{ env.SBC_TAG }} --overlay-name=turingrk1"
+          IMAGER_ARGS: "--base-installer-image ${{ env.REGISTRY}}//${{ env.USERNAME}}/installer:${{ env.PUBLISH_TAG }}-nosbclayer --system-extension-image ghcr.io/nberlee/rk3588:${{ env.RK3588_TAG }} --overlay-image ghcr.io//${{ github.actor }}/sbc-turingrk1:${{ env.SBC_TAG }} --overlay-name=turingrk1"
 
       - name: Build an turing-rk1 installer
         run: |
           make image-installer
           curl -sL "https://github.com/google/go-containerregistry/releases/download/v0.20.2/go-containerregistry_$(uname -s)_$(uname -m).tar.gz" | tar -zxv -C /usr/local/bin/ crane
-          crane push _out/installer-arm64.tar ${{ env.REGISTRY}}//${{ github.actor }}/installer:${{ env.PUBLISH_TAG }}-rk3588
+          crane push _out/installer-arm64.tar ${{ env.REGISTRY}}//${{ env.USERNAME}}/installer:${{ env.PUBLISH_TAG }}-rk3588
         env:
           #USERNAME: ${{ github.actor }}
           TAG: ${{ env.PUBLISH_TAG }}
           PLATFORM: linux/arm64
           PROGRESS: plain
-          IMAGER_ARGS: "--base-installer-image ${{ env.REGISTRY}}//${{ github.actor }}/installer:${{ env.PUBLISH_TAG }}-nosbclayer --system-extension-image ghcr.io/nberlee/rk3588:${{ env.RK3588_TAG }} --overlay-image ghcr.io/nberlee/sbc-turingrk1:${{ env.SBC_TAG }} --overlay-name=turingrk1"
+          IMAGER_ARGS: "--base-installer-image ${{ env.REGISTRY}}//${{ env.USERNAME}}/installer:${{ env.PUBLISH_TAG }}-nosbclayer --system-extension-image ghcr.io/nberlee/rk3588:${{ env.RK3588_TAG }} --overlay-image ghcr.io/nberlee/sbc-turingrk1:${{ env.SBC_TAG }} --overlay-name=turingrk1"
 
       - uses: actions/upload-artifact@v3
         with:
