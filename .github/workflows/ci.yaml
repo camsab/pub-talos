@@ -33,7 +33,7 @@ jobs:
           driver: kubernetes
           driver-opts: |
             namespace=actions-runner
-            replicas=1
+            replicas=3
             limits.memory=800Mi
             limits.ephemeral-storage=1G
 
