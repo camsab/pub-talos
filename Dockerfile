@@ -976,7 +976,7 @@ COPY --from=pkg-ca-certificates / /
 ARG TESTPKGS
 ENV PLATFORM=container
 ARG GO_LDFLAGS
-RUN  --mount=type=cache,id=testspace,target=/tmp --mount=type=cache,target=/.cache go test -failfast -v \
+RUN --security=insecure --mount=type=cache,id=testspace,target=/tmp --mount=type=cache,target=/.cache go test -failfast -v \
     -ldflags "${GO_LDFLAGS}" \
     -covermode=atomic -coverprofile=coverage.txt -coverpkg=${TESTPKGS} -count 1 -p 4 ${TESTPKGS}
 FROM scratch AS unit-tests
@@ -992,7 +992,7 @@ ARG TESTPKGS
 ENV PLATFORM=container
 ENV CGO_ENABLED=1
 ARG GO_LDFLAGS
-RUN  --mount=type=cache,id=testspace,target=/tmp --mount=type=cache,target=/.cache go test -v \
+RUN --security=insecure --mount=type=cache,id=testspace,target=/tmp --mount=type=cache,target=/.cache go test -v \
     -ldflags "${GO_LDFLAGS}" \
     -race -count 1 -p 4 ${TESTPKGS}
 

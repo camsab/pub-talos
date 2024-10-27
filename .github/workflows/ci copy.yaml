@@ -50,3 +50,4 @@ jobs:
       GIT_USERNAME: ${{ github.actor }}
       GIT_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
       DOCKER_IMAGE_NAME: "quay.io/camillo/talos/installer"
+      
