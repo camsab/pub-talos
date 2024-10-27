@@ -13,7 +13,7 @@ env:
 jobs:
   talos-build:
     #runs-on: buildjet-4vcpu-ubuntu-2204-arm
-    runs-on: ubuntu-latest
+    runs-on: home-runners
 
     permissions:
       actions: read
