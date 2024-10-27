@@ -77,7 +77,7 @@ jobs:
           TAG: ${{ env.PUBLISH_TAG }}
           PKG_KERNEL: ghcr.io/nberlee/kernel:${{ env.KERNEL_TAG }}
           #USERNAME: ${{ github.actor }}
-          PLATFORM: linux/arm64,linux/amd64
+          PLATFORM: linux/arm64
           INSTALLER_ARCH: arm64
           PROGRESS: plain
           CI_ARGS: "--cache-from=${{ env.REGISTRY}}/${{ env.USERNAME}}/imager:cache --cache-to=${{ env.REGISTRY}}/${{ env.USERNAME}}/imager:cache"
