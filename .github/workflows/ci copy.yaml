@@ -15,7 +15,7 @@ env:
   RK3588_TAG: v1.8.1-6-gd38ec69
 
 jobs:
-  talos-build:
+  talos-build-at-home:
     runs-on: home-runners
     container:
       image: gcr.io/kaniko-project/executor:debug # the kaniko image
