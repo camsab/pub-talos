@@ -27,7 +27,6 @@ jobs:
         with:
           driver: kubernetes
           driver-opts: |
-            rootless=true
             namespace=actions-runner
             replicas=1
             limits.memory=800Mi
