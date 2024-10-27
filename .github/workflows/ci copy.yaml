@@ -2,10 +2,10 @@ name: Talos Image
 
 on:
   workflow_dispatch:
-  push:
-    branches: [ 'release-*' ]
-    tags:
-      - "v*"
+  #push:
+  #  branches: [ 'release-*' ]
+  #  tags:
+  #    - "v*"
 
 env:
   ORIGIN_REPO: smira/talos
