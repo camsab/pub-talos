@@ -23,6 +23,8 @@ jobs:
       pull-requests: read
 
     steps:
+      - name: Install make
+        run: apt-get install make
       - uses: docker/setup-buildx-action@v3
         with:
           driver: kubernetes
