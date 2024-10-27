@@ -104,7 +104,7 @@ GO_BUILDFLAGS += -tags "$(GO_BUILDTAGS)"
 
 , := ,
 space := $(subst ,, )
-BUILD := docker buildx build --driver=kubernetes
+BUILD := docker buildx build
 PLATFORM ?= linux/amd64
 PROGRESS ?= auto
 PUSH ?= false
