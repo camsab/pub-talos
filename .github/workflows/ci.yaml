@@ -9,6 +9,8 @@ env:
   KERNEL_TAG: v1.8.1-6-g9f2d546
   SBC_TAG: v1.8.1
   RK3588_TAG: v1.8.1-6-gd38ec69
+  REGISTRY: quay.io
+  USERNAME: camillo
 
 jobs:
   talos-build:
@@ -25,6 +27,7 @@ jobs:
     steps:
       - name: Install make
         run: sudo apt-get install make
+
       - uses: docker/setup-buildx-action@v3
         with:
           driver: kubernetes
@@ -34,12 +37,12 @@ jobs:
             limits.memory=800Mi
             limits.ephemeral-storage=1G
 
-      - name: Login to GitHub Container Registry
+      - name: Login to quay Container Registry
         uses: docker/login-action@v3
         with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          registry: quay.io
+          username: ${{ env.USERNAME }}
+          password: ${{ secrets.QUAY_PASS }}
 
       - name: Checkout
         uses: actions/checkout@v4
@@ -66,10 +69,10 @@ jobs:
           TAG: ${{ env.PUBLISH_TAG }}
           TAG_SUFFIX: "-nosbclayer"
           PKG_KERNEL: ghcr.io/nberlee/kernel:${{ env.KERNEL_TAG }}
-          USERNAME: ${{ github.actor }}
+          #USERNAME: ${{ env.USER }}
           PLATFORM: linux/arm64
           PROGRESS: plain
-          CI_ARGS: "--cache-from=ghcr.io/${{ github.actor }}/installer:cache --cache-to=ghcr.io/${{ github.actor }}/installer:cache"
+          CI_ARGS: "--cache-from=quay.io/${{ env.USERNAME }}/installer:cache --cache-to=quay.io/${{ env.USERNAME }}/installer:cache"
 
       - name: Build and push Talos imager image
         run: make imager
@@ -77,11 +80,11 @@ jobs:
           PUSH: '1'
           TAG: ${{ env.PUBLISH_TAG }}
           PKG_KERNEL: ghcr.io/nberlee/kernel:${{ env.KERNEL_TAG }}
-          USERNAME: ${{ github.actor }}
+          #USERNAME: ${{ env.USER }}
           PLATFORM: linux/arm64,linux/amd64
           INSTALLER_ARCH: arm64
           PROGRESS: plain
-          CI_ARGS: "--cache-from=ghcr.io/${{ github.actor }}/imager:cache --cache-to=ghcr.io/${{ github.actor }}/imager:cache"
+          CI_ARGS: "--cache-from=quay.io/${{ env.USERNAME }}/imager:cache --cache-to=quay.io/${{ env.USERNAME }}/imager:cache"
 
       - name: release-notes
         if: startsWith(github.ref, 'refs/tags/')
@@ -102,7 +105,7 @@ jobs:
           sudo zstd -d _out/metal-arm64.raw.zst
           sudo xz _out/metal-arm64.raw
         env:
-          USERNAME: ${{ github.actor }}
+         #USERNAME: ${{ github.actor }}
           TAG: ${{ env.PUBLISH_TAG }}
           PLATFORM: linux/arm64
           PROGRESS: plain
@@ -114,7 +117,7 @@ jobs:
           curl -sL "https://github.com/google/go-containerregistry/releases/download/v0.20.2/go-containerregistry_$(uname -s)_$(uname -m).tar.gz" | tar -zxv -C /usr/local/bin/ crane
           crane push _out/installer-arm64.tar ghcr.io/nberlee/installer:${{ env.PUBLISH_TAG }}-rk3588
         env:
-          USERNAME: ${{ github.actor }}
+          #USERNAME: ${{ github.actor }}
           TAG: ${{ env.PUBLISH_TAG }}
           PLATFORM: linux/arm64
           PROGRESS: plain
