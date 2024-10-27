@@ -28,8 +28,8 @@ jobs:
             nodeselector=model=rk1
             limits.memory=2G
             limits.ephemeral-storage=1G
-          config-inline: |
-            [docker-registry.registry.svc.cluster.local]
+          buildkitd-config-inline: |
+            [registry."docker-registry.registry.svc.cluster.local"]
               http = true
               insecure = true
 
