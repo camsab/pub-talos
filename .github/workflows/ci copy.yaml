@@ -16,13 +16,13 @@ jobs:
   talos-build:
     runs-on: home-runners
     container:
-      image: gcr.io/kaniko-project/executor:debug # the kaniko image
+      image: docker-registry.registry.svc.cluster.local:5000/talos/imager:v1.8.2-d7d11b9511
     permissions:
       contents: read # read the repository
     steps:
       - name: Build an turing-rk1 flashable image
         run: |
-          /bin/imager --arch arm64 --base-installer-image ${{ env.REGISTRY}}//${{ env.USERNAME}}/installer::v1.8.2-d7d11b9511-nosbclayer --system-extension-image ghcr.io/nberlee/rk3588:${{ env.RK3588_TAG }} --overlay-image ghcr.io//${{ github.actor }}/sbc-turingrk1:${{ env.SBC_TAG }} --overlay-name=turingrk1
+          /bin/imager --arch arm64 --base-installer-image ${{ env.REGISTRY}}/${{ env.USERNAME}}/installer::v1.8.2-d7d11b9511-nosbclayer --system-extension-image ghcr.io/nberlee/rk3588:${{ env.RK3588_TAG }} --overlay-image ghcr.io//${{ github.actor }}/sbc-turingrk1:${{ env.SBC_TAG }} --overlay-name=turingrk1
 
       #- name: Build an turing-rk1 flashable image
       #  run: |
