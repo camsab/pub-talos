@@ -17,6 +17,7 @@ jobs:
     runs-on: home-runners
     container:
       image: ghcr.io/nberlee/imager:v1.8.2-2e003697a7
+      options: --privileged
     permissions:
       contents: read # read the repository
     steps:
