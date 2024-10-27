@@ -29,7 +29,7 @@ jobs:
             limits.memory=2G
             limits.ephemeral-storage=1G
           buildkitd-config-inline: |
-            [registry."docker-registry.registry.svc.cluster.local"]
+            ["docker-registry.registry.svc.cluster.local"]
               http = true
               insecure = true
 
