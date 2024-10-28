@@ -24,40 +24,15 @@ jobs:
         run: |
           /bin/imager metal --arch arm64 --base-installer-image ghcr.io/nberlee/installer:v1.8.2-2e003697a7-nosbclayer --system-extension-image ghcr.io/nberlee/rk3588:${{ env.RK3588_TAG }} --overlay-image ghcr.io/nberlee/sbc-turingrk1:${{ env.SBC_TAG }} --overlay-name=turingrk1
 
-      #- name: Build an turing-rk1 flashable image
-      #  run: |
-      #    make image-metal
-      #    sudo zstd -d _out/metal-arm64.raw.zst
-      #    sudo xz _out/metal-arm64.raw
-      #  env:
-      #    #USERNAME: ${{ github.actor }}
-      #    TAG: ${{ env.PUBLISH_TAG }}
-      #    PLATFORM: linux/arm64
-      #    PROGRESS: plain
-      #    IMAGER_ARGS: "--base-installer-image ${{ env.REGISTRY}}//${{ env.USERNAME}}/installer:${{ env.PUBLISH_TAG }}-nosbclayer --system-extension-image ghcr.io/nberlee/rk3588:${{ env.RK3588_TAG }} --overlay-image ghcr.io//${{ github.actor }}/sbc-turingrk1:${{ env.SBC_TAG }} --overlay-name=turingrk1"
-      #- name: Build an turing-rk1 installer
-      #  run: |
-      #    make image-installer
-      #    curl -sL "https://github.com/google/go-containerregistry/releases/download/v0.20.2/go-containerregistry_$(uname -s)_$(uname -m).tar.gz" | tar -zxv -C /usr/local/bin/ crane
-      #    crane push _out/installer-arm64.tar ${{ env.REGISTRY}}//${{ env.USERNAME}}/installer:${{ env.PUBLISH_TAG }}-rk3588
-      #  env:
-      #    #USERNAME: ${{ github.actor }}
-      #    TAG: ${{ env.PUBLISH_TAG }}
-      #    PLATFORM: linux/arm64
-      #    PROGRESS: plain
-      #    IMAGER_ARGS: "--base-installer-image ${{ env.REGISTRY}}//${{ env.USERNAME}}/installer:${{ env.PUBLISH_TAG }}-nosbclayer --system-extension-image ghcr.io/nberlee/rk3588:${{ env.RK3588_TAG }} --overlay-image ghcr.io/nberlee/sbc-turingrk1:${{ env.SBC_TAG }} --overlay-name=turingrk1"
-      #- uses: actions/upload-artifact@v3
-      #  with:
-      #    name: image-turing-rk1
-      #    path: _out/*.raw.xz
-      #    if-no-files-found: error
-      #- name: Release
-      #  if: startsWith(github.ref, 'refs/tags/')
-      #  uses: crazy-max/ghaction-github-release@v2
-      #  with:
-      #    body_path: _out/RELEASE_NOTES.md
-      #    draft: "true"
-      #    files: |
-      #      _out/metal-arm64.raw.*
-      #      _out/metal-arm64.raw.*
-      #      _out/metal-arm64.raw.*
+      - name: Build an turing-rk1 installer
+        run: |
+            /bin/imager installer --arch arm64 --base-installer-image ghcr.io/nberlee/installer:v1.8.2-2e003697a7-nosbclayer --system-extension-image ghcr.io/nberlee/rk3588:${{ env.RK3588_TAG }} --overlay-image ghcr.io/nberlee/sbc-turingrk1:${{ env.SBC_TAG }} --overlay-name=turingrk1
+            curl -sL "https://github.com/google/go-containerregistry/releases/download/v0.20.2/go-containerregistry_$(uname -s)_$(uname -m).tar.gz" | tar -zxv -C /usr/local/bin/ crane
+            crane push _out/installer-arm64.tar docker-registry.registry.svc.cluster.local:5000/talos/installer:v1.8.2-2e003697a7-rk3588
+        
+      - uses: actions/upload-artifact@v3
+        with:
+          name: image-turing-rk1
+          path: _out/*.raw.xz
+          if-no-files-found: error
+        

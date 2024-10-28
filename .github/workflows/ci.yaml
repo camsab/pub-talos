@@ -32,7 +32,7 @@ jobs:
           driver-opts: |
             namespace=actions-runner
             replicas=1
-            nodeselector=kubernetes.io/hostname=rk1-4
+            nodeselector=kubernetes.io/hostname=rk1-1
             limits.memory=2G
             limits.ephemeral-storage=2G
           buildkitd-config-inline: |
