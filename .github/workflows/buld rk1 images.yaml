@@ -19,7 +19,8 @@ jobs:
   talos-build:
     runs-on: home-runners
     container:
-      image: ${{ env.REGISTRY }}/imager:${{ env.PUBLISH_TAG }}
+      #### WARNING this image should be ${{ env.REGISTRY }}/imager:${{ env.PUBLISH_TAG }} but seems jobs can't access env so need to put it here manually 
+      image: ghcr.io/nberlee/imager:v1.8.2-1277d923e4
     permissions:
       contents: read # read the repository
     steps:
