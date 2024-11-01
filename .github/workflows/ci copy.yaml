@@ -25,10 +25,6 @@ jobs:
         run: |
           apk add nodejs
           sed -i "s:ID=alpine:ID=NotpineForGHA:" /etc/os-release
-          cd /host/home/runner/runners/*/externals/
-          rm -rf node20/*
-          mkdir node20/bin
-          ln -s /usr/bin/node node20/bin/node
         shell: sh  # No bash in Alpine by default
       - name: Build an turing-rk1 flashable image
         run: |
@@ -43,6 +39,6 @@ jobs:
       - uses: actions/upload-artifact@v3
         with:
           name: image-turing-rk1
-          path: _out/*.raw.xz
+          path: /out/*.raw.xz
           if-no-files-found: error
         
