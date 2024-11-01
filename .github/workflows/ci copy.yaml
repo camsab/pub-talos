@@ -18,6 +18,8 @@ jobs:
       image: registry.camsab.me:443/talos/imager:v1.8.2-a52a96096b
     permissions:
       contents: read # read the repository
+    outputs:
+      RUNNER: ${{ runner.name }}
     steps:
       - name: Make upload-artifact work on Alpine
         run: |
@@ -34,7 +36,7 @@ jobs:
 #            crane push /out/installer-arm64.tar registry.camsab.me:443/talos/installer:v1.8.2-2e003697a7-rk3588-B
   talos-upload:
     needs: talos-build
-    runs-on: home-runners
+    runs-on: ${{needs.talos-build.outputs.RUNNER}}
     permissions:
       contents: read # read the repository
     steps:
