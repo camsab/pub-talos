@@ -11,36 +11,28 @@ env:
   RK3588_TAG: v1.8.1-6-gd38ec69
   REGISTRY: registry.camsab.me:443
   USERNAME: talos
-jobs:        
+jobs:
+          
   talos-build:
     runs-on: home-runners
     container:
       image: registry.camsab.me:443/talos/imager:v1.8.2-a52a96096b
     permissions:
       contents: read # read the repository
-    outputs:
-      RUNNER: ${{ runner.name }}
     steps:
-      - name: Make upload-artifact work on Alpine
-        run: |
-          apk add gcompat
-          sed -i "s:ID=alpine:ID=NotpineForGHA:" /etc/os-release
       - name: Build an turing-rk1 flashable image
         run: |
           /bin/imager metal --arch arm64 --base-installer-image registry.camsab.me:443/talos/installer:v1.8.2-a52a96096b-nosbclayer --system-extension-image ghcr.io/nberlee/rk3588:${{ env.RK3588_TAG }} --system-extension-image ghcr.io/siderolabs/util-linux-tools:2.40.2@sha256:3c3d2c76290fe1133d2472b01707b69bfdcc5b804a49e6370110001e23fa252a --system-extension-image ghcr.io/siderolabs/iscsi-tools:v0.1.5@sha256:b3a3b65e1a20734c3fbc4655165b376bcd62d9593c3069fd0bf0f9296664cd38 --overlay-image ghcr.io/nberlee/sbc-turingrk1:${{ env.SBC_TAG }} --overlay-name=turingrk1
 
-#      - name: Build an turing-rk1 installer
-#        run: |
-#            /bin/imager installer --arch arm64 --base-installer-image registry.camsab.me:443/talos/installer:v1.8.2-a52a96096b-nosbclayer --system-extension-image ghcr.io/nberlee/rk3588:${{ env.RK3588_TAG }}  --system-extension-image ghcr.io/siderolabs/util-linux-tools:2.40.2@sha256:3c3d2c76290fe1133d2472b01707b69bfdcc5b804a49e6370110001e23fa252a --system-extension-image ghcr.io/siderolabs/iscsi-tools:v0.1.5@sha256:b3a3b65e1a20734c3fbc4655165b376bcd62d9593c3069fd0bf0f9296664cd38 --overlay-image ghcr.io/nberlee/sbc-turingrk1:${{ env.SBC_TAG }} --overlay-name=turingrk1
-#            apk add crane
-#            crane push /out/installer-arm64.tar registry.camsab.me:443/talos/installer:v1.8.2-2e003697a7-rk3588-B
+      - name: Build an turing-rk1 installer
+        run: |
+            /bin/imager installer --arch arm64 --base-installer-image registry.camsab.me:443/talos/installer:v1.8.2-a52a96096b-nosbclayer --system-extension-image ghcr.io/nberlee/rk3588:${{ env.RK3588_TAG }}  --system-extension-image ghcr.io/siderolabs/util-linux-tools:2.40.2@sha256:3c3d2c76290fe1133d2472b01707b69bfdcc5b804a49e6370110001e23fa252a --system-extension-image ghcr.io/siderolabs/iscsi-tools:v0.1.5@sha256:b3a3b65e1a20734c3fbc4655165b376bcd62d9593c3069fd0bf0f9296664cd38 --overlay-image ghcr.io/nberlee/sbc-turingrk1:${{ env.SBC_TAG }} --overlay-name=turingrk1
+            apk add crane
+            crane push /out/installer-arm64.tar registry.camsab.me:443/talos/installer:v1.8.2-2e003697a7-rk3588-B
   talos-upload:
-    needs: talos-build
-    runs-on: ${{needs.talos-build.outputs.RUNNER}}
-    permissions:
-      contents: read # read the repository
+    runs-on: home-runners
     steps:
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v3
         with:
           name: image-turing-rk1
           path: /out/*.raw.xz
