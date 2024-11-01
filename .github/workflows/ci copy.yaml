@@ -20,9 +20,9 @@ jobs:
     permissions:
       contents: read # read the repository
     steps:
-      #- name: Build an turing-rk1 flashable image
-      #  run: |
-      #    /bin/imager metal --arch arm64 --base-installer-image registry.camsab.me:443/talos/installer:v1.8.2-a52a96096b-nosbclayer --system-extension-image ghcr.io/nberlee/rk3588:${{ env.RK3588_TAG }} --system-extension-image ghcr.io/siderolabs/util-linux-tools:2.40.2@sha256:3c3d2c76290fe1133d2472b01707b69bfdcc5b804a49e6370110001e23fa252a --system-extension-image ghcr.io/siderolabs/iscsi-tools:v0.1.5@sha256:b3a3b65e1a20734c3fbc4655165b376bcd62d9593c3069fd0bf0f9296664cd38 --overlay-image ghcr.io/nberlee/sbc-turingrk1:${{ env.SBC_TAG }} --overlay-name=turingrk1
+      - name: Build an turing-rk1 flashable image
+        run: |
+          /bin/imager metal --arch arm64 --base-installer-image registry.camsab.me:443/talos/installer:v1.8.2-a52a96096b-nosbclayer --system-extension-image ghcr.io/nberlee/rk3588:${{ env.RK3588_TAG }} --system-extension-image ghcr.io/siderolabs/util-linux-tools:2.40.2@sha256:3c3d2c76290fe1133d2472b01707b69bfdcc5b804a49e6370110001e23fa252a --system-extension-image ghcr.io/siderolabs/iscsi-tools:v0.1.5@sha256:b3a3b65e1a20734c3fbc4655165b376bcd62d9593c3069fd0bf0f9296664cd38 --overlay-image ghcr.io/nberlee/sbc-turingrk1:${{ env.SBC_TAG }} --overlay-name=turingrk1
       
       - name: Build an turing-rk1 installer
         run: |
