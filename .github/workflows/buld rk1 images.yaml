@@ -25,10 +25,6 @@ jobs:
     permissions:
       contents: read # read the repository
     steps:
-      - name: Delete Old Artifacts
-        run: |
-          cd /out        
-          rm -fr *
       - name: Build an turing-rk1 flashable image
         run: |
           /bin/imager metal --arch arm64 --base-installer-image ${{ env.REGISTRY}}/:${{ env.PUBLISH_TAG}}-nosbclayer --system-extension-image ${{ env.REGISTRY}}/rk3588:${{ env.RK3588_TAG }} --system-extension-image ghcr.io/siderolabs/util-linux-tools:${{ env.LINUX_TOOLS}} --system-extension-image ghcr.io/siderolabs/iscsi-tools:${{ env.ISCSI_TOOLS}} --overlay-image ${{ env.REGISTRY}}/sbc-turingrk1:${{ env.SBC_TAG }} --overlay-name=turingrk1
