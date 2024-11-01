@@ -33,6 +33,7 @@ jobs:
 #            apk add crane
 #            crane push /out/installer-arm64.tar registry.camsab.me:443/talos/installer:v1.8.2-2e003697a7-rk3588-B
   talos-upload:
+    needs: talos-build
     runs-on: home-runners
     permissions:
       contents: read # read the repository
