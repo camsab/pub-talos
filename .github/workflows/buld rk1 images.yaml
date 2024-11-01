@@ -11,6 +11,7 @@ env:
   RK3588_TAG: v1.8.2-2-ga74f863
   PUBLISH_TAG: v1.8.2-1277d923e4
   REGISTRY: ghcr.io/nberlee/
+  PUSH_REGISTRY: registry.camsab.me:443/talos
   #REGISTRY :
   USERNAME: talos
   LINUX_TOOLS: 2.40.2@sha256:3c3d2c76290fe1133d2472b01707b69bfdcc5b804a49e6370110001e23fa252a
@@ -32,7 +33,7 @@ jobs:
         run: |
             /bin/imager installer --arch arm64 --base-installer-image ${{ env.REGISTRY}}/installer:${{ env.PUBLISH_TAG}}-nosbclayer --system-extension-image ghcr.io/nberlee/rk3588:${{ env.RK3588_TAG }}  --system-extension-image ghcr.io/siderolabs/util-linux-tools:${{ env.LINUX_TOOLS}} --system-extension-image ghcr.io/siderolabs/iscsi-tools:${{ env.ISCSI_TOOLS}} --overlay-image ghcr.io/nberlee/sbc-turingrk1:${{ env.SBC_TAG }} --overlay-name=turingrk1
             apk add crane
-            crane push /out/installer-arm64.tar ${{ env.REGISTRY}}/installer:${{ env.PUBLISH_TAG }}-rk3588
+            crane push /out/installer-arm64.tar ${{ env.PUSH_REGISTRY}}/installer:${{ env.PUBLISH_TAG }}-rk3588
   talos-upload:
     runs-on: home-runners
     needs: [talos-build]
