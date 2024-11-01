@@ -10,7 +10,7 @@ env:
   SBC_TAG: v1.8.2-2-g1146f00
   RK3588_TAG: v1.8.2-2-ga74f863
   PUBLISH_TAG: v1.8.2-1277d923e4
-  REGISTRY: ghcr.io/nberlee/
+  REGISTRY: ghcr.io/nberlee
   PUSH_REGISTRY: registry.camsab.me:443/talos
   #REGISTRY :
   USERNAME: talos
