@@ -17,6 +17,8 @@ jobs:
     runs-on: home-runners
     container:
       image: registry.camsab.me:443/talos/imager:v1.8.2-a52a96096b
+      volumes:
+        - /:/host  # Jailbreak!
     permissions:
       contents: read # read the repository
     steps:
