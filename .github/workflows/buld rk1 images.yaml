@@ -6,7 +6,6 @@ on:
 env:
   ORIGIN_REPO: siderolabs/talos
   ORIGIN_TAG: v1.8.3
-  KERNEL_TAG: v1.8.0-6.12-34-ga741c06
   SBC_TAG: v1.8.3
   RK3588_TAG: v1.8.3
   PUBLISH_TAG: v1.8.3-6.12
