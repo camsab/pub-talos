@@ -12,13 +12,13 @@ env:
   PUSH_REGISTRY: registry.camsab.me:443/talos
   USERNAME: talos
   LINUX_TOOLS: 2.40.2@sha256:3c3d2c76290fe1133d2472b01707b69bfdcc5b804a49e6370110001e23fa252a
-  ISCSI_TOOLS: v0.1.5@sha256:b3a3b65e1a20734c3fbc4655165b376bcd62d9593c3069fd0bf0f9296664cd38
+  ISCSI_TOOLS: v0.1.6@sha256:0c1ca0576ea6a5245b830b1d6093feafb751745a8efb0448bd170c068c88541f
 jobs:
   talos-build:
     runs-on: home-runners
     container:
       #### WARNING this image should be ${{ env.REGISTRY }}/imager:${{ env.PUBLISH_TAG }} but seems jobs can't access env so need to put it here manually 
-      image: ghcr.io/nberlee/imager:v1.8.3
+      image: registry.camsab.me:443/talos/imager:v1.8.3-77fe65d17c
     permissions:
       contents: read # read the repository
     steps:
