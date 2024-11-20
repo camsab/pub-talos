@@ -4,11 +4,11 @@ on:
   workflow_dispatch:
 
 env:
-  ORIGIN_REPO: smira/talos
-  ORIGIN_TAG: backports/v1.8.2
-  KERNEL_TAG: v1.8.1-6-g9f2d546
-  SBC_TAG: v1.8.1
-  RK3588_TAG: v1.8.1-6-gd38ec69
+  ORIGIN_REPO: siderolabs/talos
+  ORIGIN_TAG: v1.8.3
+  KERNEL_TAG: v1.8.0-6.12
+  SBC_TAG: v1.8.3
+  RK3588_TAG: v1.8.3
   REGISTRY: docker-registry.registry.svc.cluster.local:5000
   USERNAME: talos
 jobs:
