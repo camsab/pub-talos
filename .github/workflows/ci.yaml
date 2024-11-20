@@ -64,7 +64,7 @@ jobs:
           PUSH: '1'
           TAG: ${{ env.PUBLISH_TAG }}
           TAG_SUFFIX: "-nosbclayer"
-          PKG_KERNEL: ghcr.io/nberlee/kernel:${{ env.KERNEL_TAG }}
+          PKG_KERNEL: registry.camsab.me:443/talos/kernel:${{ env.KERNEL_TAG }}
           #USERNAME: ${{ github.actor }}
           PLATFORM: linux/arm64
           PROGRESS: plain
@@ -75,7 +75,7 @@ jobs:
         env:
           PUSH: '1'
           TAG: ${{ env.PUBLISH_TAG }}
-          PKG_KERNEL: ghcr.io/nberlee/kernel:${{ env.KERNEL_TAG }}
+          PKG_KERNEL: registry.camsab.me:443/talos/kernel:${{ env.KERNEL_TAG }}
           #USERNAME: ${{ github.actor }}
           PLATFORM: linux/arm64
           INSTALLER_ARCH: arm64
