@@ -1,16 +1,22 @@
 name: Talos Image
 
 on:
-  workflow_dispatch:
+  push:
+    branches: [ 'release-*' ]
+    tags:
+      - "v*"
 
 env:
   ORIGIN_REPO: smira/talos
-  ORIGIN_TAG: backports/v1.8.2
-  KERNEL_TAG: v1.8.1-6-g9f2d546
-  SBC_TAG: v1.8.1
-  RK3588_TAG: v1.8.1-6-gd38ec69
-  REGISTRY: docker-registry.registry.svc.cluster.local:5000
+  ORIGIN_TAG: v1.8.3
+  KERNEL_TAG: v1.8.3-6.12.0
+  RK3588_TAG: v1.8.3-6.12.0
+  SBC_TAG: v1.8.3-6.12.0
+  REGISTRY: registry.camsab.me:443
   USERNAME: talos
+  PUBLISH_TAG: v1.8.3-6.12.0
+  LINUX_TOOLS: 2.40.2@sha256:3c3d2c76290fe1133d2472b01707b69bfdcc5b804a49e6370110001e23fa252a
+  ISCSI_TOOLS: v0.1.5@sha256:b3a3b65e1a20734c3fbc4655165b376bcd62d9593c3069fd0bf0f9296664cd38
 jobs:
   talos-build-tools:
     runs-on: home-runners
@@ -64,7 +70,7 @@ jobs:
           PUSH: '1'
           TAG: ${{ env.PUBLISH_TAG }}
           TAG_SUFFIX: "-nosbclayer"
-          PKG_KERNEL: ghcr.io/nberlee/kernel:${{ env.KERNEL_TAG }}
+          PKG_KERNEL: :${{ env.KERNEL_TAG }}
           #USERNAME: ${{ github.actor }}
           PLATFORM: linux/arm64
           PROGRESS: plain
@@ -75,7 +81,7 @@ jobs:
         env:
           PUSH: '1'
           TAG: ${{ env.PUBLISH_TAG }}
-          PKG_KERNEL: ghcr.io/nberlee/kernel:${{ env.KERNEL_TAG }}
+          PKG_KERNEL: registry.camsab.me:443/talos/kernel:${{ env.KERNEL_TAG }}
           #USERNAME: ${{ github.actor }}
           PLATFORM: linux/arm64
           INSTALLER_ARCH: arm64
@@ -88,9 +94,35 @@ jobs:
           mkdir -p _out
           # Hack for ARM64 release tool
           mv hack/release.sh hack/release.sh.old
-          curl -sL "https://raw.githubusercontent.com/nberlee/talos/release-1.8-turingrk1/hack/release.sh" -o hack/release.sh
+          curl -sL "https://raw.githubusercontent.com/camsab/talos/release-1.8-turingrk1/hack/release.sh" -o hack/release.sh
           chmod +x hack/release.sh
           export TAG=${GITHUB_REF#refs/tags/}
           
           make release-notes
           mv hack/release.sh.old hack/release.sh
+
+            talos-build:
+  talos-build:
+    runs-on: home-runners
+    container:
+      #### WARNING this image should be ${{ env.REGISTRY }}/imager:${{ env.PUBLISH_TAG }} but seems jobs can't access env so need to put it here manually 
+      image: ghcr.io/nberlee/imager:v1.8.2-1277d923e4
+    permissions:
+      contents: read # read the repository
+    steps:
+      - name: Build an turing-rk1 flashable image
+        run: |
+          /bin/imager metal --arch arm64 --base-installer-image ${{ env.REGISTRY}}/:${{ env.PUBLISH_TAG}}-nosbclayer --system-extension-image ${{ env.REGISTRY}}/rk3588:${{ env.RK3588_TAG }} --system-extension-image ghcr.io/siderolabs/util-linux-tools:${{ env.LINUX_TOOLS}} --system-extension-image ghcr.io/siderolabs/iscsi-tools:${{ env.ISCSI_TOOLS}} --overlay-image ${{ env.REGISTRY}}/sbc-turingrk1:${{ env.SBC_TAG }} --overlay-name=turingrk1
+      - name: Build an turing-rk1 installer
+        run: |
+          /bin/imager installer --arch arm64 --base-installer-image ${{ env.REGISTRY}}/installer:${{ env.PUBLISH_TAG}}-nosbclayer --system-extension-image ${{ env.REGISTRY}}/rk3588:${{ env.RK3588_TAG }}  --system-extension-image ghcr.io/siderolabs/util-linux-tools:${{ env.LINUX_TOOLS}} --system-extension-image ghcr.io/siderolabs/iscsi-tools:${{ env.ISCSI_TOOLS}} --overlay-image ${{ env.REGISTRY}}/sbc-turingrk1:${{ env.SBC_TAG }} --overlay-name=turingrk1
+          apk add crane
+          crane push /out/installer-arm64.tar ${{ env.REGISTRY}}/installer:${{ env.PUBLISH_TAG }}-rk3588
+  talos-upload:
+    runs-on: home-runners
+    needs: [talos-build]
+    steps:
+      - uses: actions/upload-artifact@v3
+        with:
+          name: image-turing-rk1
+          path: /out/*.raw.zst
