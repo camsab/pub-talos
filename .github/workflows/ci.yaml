@@ -5,9 +5,8 @@ on:
     branches: [ 'release-*' ]
     tags:
       - "v*"
-
 env:
-  ORIGIN_REPO: smira/talos
+  ORIGIN_REPO: siderolabs/talos
   ORIGIN_TAG: v1.8.3
   KERNEL_TAG: v1.8.3-6.12.0
   RK3588_TAG: v1.8.3-6.12.0
@@ -20,7 +19,6 @@ env:
 jobs:
   talos-build-tools:
     runs-on: home-runners
-
     permissions:
       actions: read
       contents: write
@@ -45,7 +43,6 @@ jobs:
             [registry."docker-registry.registry.svc.cluster.local:5000"]
               http = true
   
-
       - name: Checkout
         uses: actions/checkout@v4
         with:
@@ -100,6 +97,7 @@ jobs:
           mv hack/release.sh.old hack/release.sh
 
   talos-build:
+    needs: [talos-build-tools]
     runs-on: home-runners
     container:
       #### WARNING this image should be ${{ env.REGISTRY }}/imager:${{ env.PUBLISH_TAG }} but seems jobs can't access env so need to put it here manually 
@@ -116,6 +114,7 @@ jobs:
           apk add crane
           crane push /out/installer-arm64.tar ${{ env.REGISTRY}}/installer:${{ env.PUBLISH_TAG }}-rk3588
   talos-upload:
+    needs: [talos-build]
     runs-on: home-runners
     steps:
       - uses: actions/upload-artifact@v3
