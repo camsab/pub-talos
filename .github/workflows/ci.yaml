@@ -16,87 +16,74 @@ env:
   LINUX_TOOLS: 2.40.2@sha256:3c3d2c76290fe1133d2472b01707b69bfdcc5b804a49e6370110001e23fa252a
   ISCSI_TOOLS: v0.1.5@sha256:b3a3b65e1a20734c3fbc4655165b376bcd62d9593c3069fd0bf0f9296664cd38
 jobs:
-  talos-build-tools:
-    runs-on: home-runners
-    permissions:
-      actions: read
-      contents: write
-      issues: read
-      packages: write
-      pull-requests: read
-
-    steps:
-      - name: Install make
-        run: sudo apt update && sudo apt install make
-
-      - uses: docker/setup-buildx-action@v3
-        with:
-          driver: kubernetes
-          driver-opts: |
-            namespace=actions-runner
-            replicas=1
-            nodeselector=kubernetes.io/hostname=rk1-4
-            limits.memory=2G
-            limits.ephemeral-storage=2G
-          buildkitd-config-inline: |
-            [registry."docker-registry.registry.svc.cluster.local:5000"]
-              http = true
-  
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          repository: ${{ env.ORIGIN_REPO }}
-          ref: ${{ env.ORIGIN_TAG }}
-          # need history for `git describe` to work for Talos `Makefile`
-          fetch-depth: 0
-          fetch-tags: true
-
-      - name: Set Environment Variable
-        run: |
-          if [[ $GITHUB_REF == refs/tags/* ]]; then
-            echo "PUBLISH_TAG=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
-          else
-            echo "PUBLISH_TAG=${ORIGIN_TAG#*/}-${GITHUB_SHA::10}" >> $GITHUB_ENV
-          fi
-        shell: bash
-
-      - name: Build and push Talos installer image
-        run: make installer
-        env:
-          PUSH: '1'
-          TAG: ${{ env.PUBLISH_TAG }}
-          TAG_SUFFIX: "-nosbclayer"
-          PKG_KERNEL: ${{ env.REGISTRY}}/${{ env.USERNAME}}/kernel:${{ env.KERNEL_TAG }}
-          PLATFORM: linux/arm64
-          PROGRESS: plain
-          CI_ARGS: "--cache-from=${{ env.REGISTRY}}/${{ env.USERNAME}}/installer:cache --cache-to=${{ env.REGISTRY}}/${{ env.USERNAME}}/installer:cache"
-
-      - name: Build and push Talos imager image
-        run: make imager
-        env:
-          PUSH: '1'
-          TAG: ${{ env.PUBLISH_TAG }}
-          PKG_KERNEL: ${{ env.REGISTRY}}/${{ env.USERNAME}}/kernel:${{ env.KERNEL_TAG }}
-          PLATFORM: linux/arm64
-          INSTALLER_ARCH: arm64
-          PROGRESS: plain
-          CI_ARGS: "--cache-from=${{ env.REGISTRY}}/${{ env.USERNAME}}/imager:cache --cache-to=${{ env.REGISTRY}}/${{ env.USERNAME}}/imager:cache"
-
-      - name: release-notes
-        if: startsWith(github.ref, 'refs/tags/')
-        run: |
-          mkdir -p _out
-          # Hack for ARM64 release tool
-          mv hack/release.sh hack/release.sh.old
-          curl -sL "https://raw.githubusercontent.com/camsab/talos/release-1.8-turingrk1/hack/release.sh" -o hack/release.sh
-          chmod +x hack/release.sh
-          export TAG=${GITHUB_REF#refs/tags/}
-          
-          make release-notes
-          mv hack/release.sh.old hack/release.sh
-
+  #talos-build-tools:
+  #  runs-on: home-runners
+  #  permissions:
+  #    actions: read
+  #    contents: write
+  #    issues: read
+  #    packages: write
+  #    pull-requests: read
+#
+  #  steps:
+  #    - name: Install make
+  #      run: sudo apt update && sudo apt install make
+#
+  #    - uses: docker/setup-buildx-action@v3
+  #      with:
+  #        driver: kubernetes
+  #        driver-opts: |
+  #          namespace=actions-runner
+  #          replicas=1
+  #          nodeselector=kubernetes.io/hostname=rk1-4
+  #          limits.memory=2G
+  #          limits.ephemeral-storage=2G
+  #        buildkitd-config-inline: |
+  #          [registry."docker-registry.registry.svc.cluster.local:5000"]
+  #            http = true
+  #
+  #    - name: Checkout
+  #      uses: actions/checkout@v4
+  #      with:
+  #        repository: ${{ env.ORIGIN_REPO }}
+  #        ref: ${{ env.ORIGIN_TAG }}
+  #        # need history for `git describe` to work for Talos `Makefile`
+  #        fetch-depth: 0
+  #        fetch-tags: true
+#
+  #    - name: Set Environment Variable
+  #      run: |
+  #        if [[ $GITHUB_REF == refs/tags/* ]]; then
+  #          echo "PUBLISH_TAG=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+  #        else
+  #          echo "PUBLISH_TAG=${ORIGIN_TAG#*/}-${GITHUB_SHA::10}" >> $GITHUB_ENV
+  #        fi
+  #      shell: bash
+#
+  #    - name: Build and push Talos installer image
+  #      run: make installer
+  #      env:
+  #        PUSH: '1'
+  #        TAG: ${{ env.PUBLISH_TAG }}
+  #        TAG_SUFFIX: "-nosbclayer"
+  #        PKG_KERNEL: ${{ env.REGISTRY}}/${{ env.USERNAME}}/kernel:${{ env.KERNEL_TAG }}
+  #        PLATFORM: linux/arm64
+  #        PROGRESS: plain
+  #        CI_ARGS: "--cache-from=${{ env.REGISTRY}}/${{ env.USERNAME}}/installer:cache --cache-to=${{ env.REGISTRY}}/${{ env.USERNAME}}/installer:cache"
+#
+  #    - name: Build and push Talos imager image
+  #      run: make imager
+  #      env:
+  #        PUSH: '1'
+  #        TAG: ${{ env.PUBLISH_TAG }}
+  #        PKG_KERNEL: ${{ env.REGISTRY}}/${{ env.USERNAME}}/kernel:${{ env.KERNEL_TAG }}
+  #        PLATFORM: linux/arm64
+  #        INSTALLER_ARCH: arm64
+  #        PROGRESS: plain
+  #        CI_ARGS: "--cache-from=${{ env.REGISTRY}}/${{ env.USERNAME}}/imager:cache --cache-to=${{ env.REGISTRY}}/${{ env.USERNAME}}/imager:cache"
+#
   talos-build:
-    needs: [talos-build-tools]
+  #  needs: [talos-build-tools]
     runs-on: home-runners
     container:
       #### WARNING this image should be ${{ env.REGISTRY }}/imager:${{ env.PUBLISH_TAG }} but seems jobs can't access env so need to put it here manually 
