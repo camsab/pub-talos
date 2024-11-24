@@ -92,10 +92,10 @@ jobs:
     steps:
       - name: Build an turing-rk1 flashable image
         run: |
-          /bin/imager metal --arch arm64 --base-installer-image ${{ env.REGISTRY}}/${{ env.USERNAME}}/installer:${{ env.PUBLISH_TAG}}-nosbclayer --system-extension-image ${{ env.REGISTRY}}/${{ env.USERNAME}}/rk3588:${{ env.RK3588_TAG }} --system-extension-image ghcr.io/siderolabs/util-linux-tools:${{ env.LINUX_TOOLS}} --system-extension-image ghcr.io/siderolabs/iscsi-tools:${{ env.ISCSI_TOOLS}} --overlay-image ${{ env.REGISTRY}}/${{ env.USERNAME}}/sbc-turingrk1:${{ env.SBC_TAG }} --overlay-name=turingrk1
+          /bin/imager metal --arch arm64 --base-installer-image ${{ env.REGISTRY}}/${{ env.USERNAME}}/installer:${{ env.SBC_TAG}}-nosbclayer --system-extension-image ${{ env.REGISTRY}}/${{ env.USERNAME}}/rk3588:${{ env.RK3588_TAG }} --system-extension-image ghcr.io/siderolabs/util-linux-tools:${{ env.LINUX_TOOLS}} --system-extension-image ghcr.io/siderolabs/iscsi-tools:${{ env.ISCSI_TOOLS}} --overlay-image ${{ env.REGISTRY}}/${{ env.USERNAME}}/sbc-turingrk1:${{ env.SBC_TAG }} --overlay-name=turingrk1
       - name: Build an turing-rk1 installer
         run: |
-          /bin/imager installer --arch arm64 --base-installer-image ${{ env.REGISTRY}}/${{ env.USERNAME}}/installer:${{ env.PUBLISH_TAG}}-nosbclayer --system-extension-image ${{ env.REGISTRY}}/${{ env.USERNAME}}/rk3588:${{ env.RK3588_TAG }}  --system-extension-image ghcr.io/siderolabs/util-linux-tools:${{ env.LINUX_TOOLS}} --system-extension-image ghcr.io/siderolabs/iscsi-tools:${{ env.ISCSI_TOOLS}} --overlay-image ${{ env.REGISTRY}}/${{ env.USERNAME}}/sbc-turingrk1:${{ env.SBC_TAG }} --overlay-name=turingrk1
+          /bin/imager installer --arch arm64 --base-installer-image ${{ env.REGISTRY}}/${{ env.USERNAME}}/installer:${{ env.SBC_TAG}}-nosbclayer --system-extension-image ${{ env.REGISTRY}}/${{ env.USERNAME}}/rk3588:${{ env.RK3588_TAG }}  --system-extension-image ghcr.io/siderolabs/util-linux-tools:${{ env.LINUX_TOOLS}} --system-extension-image ghcr.io/siderolabs/iscsi-tools:${{ env.ISCSI_TOOLS}} --overlay-image ${{ env.REGISTRY}}/${{ env.USERNAME}}/sbc-turingrk1:${{ env.SBC_TAG }} --overlay-name=turingrk1
           apk add crane
           crane push /out/installer-arm64.tar ${{ env.REGISTRY}}/${{ env.USERNAME}}/installer:${{ env.PUBLISH_TAG }}-rk3588
   talos-upload:
