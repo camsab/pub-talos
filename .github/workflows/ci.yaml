@@ -70,8 +70,7 @@ jobs:
           PUSH: '1'
           TAG: ${{ env.PUBLISH_TAG }}
           TAG_SUFFIX: "-nosbclayer"
-          PKG_KERNEL: :${{ env.KERNEL_TAG }}
-          #USERNAME: ${{ github.actor }}
+          PKG_KERNEL: ${{ env.REGISTRY}}/${{ env.USERNAME}}/kernel:${{ env.KERNEL_TAG }}
           PLATFORM: linux/arm64
           PROGRESS: plain
           CI_ARGS: "--cache-from=${{ env.REGISTRY}}/${{ env.USERNAME}}/installer:cache --cache-to=${{ env.REGISTRY}}/${{ env.USERNAME}}/installer:cache"
@@ -81,9 +80,7 @@ jobs:
         env:
           PUSH: '1'
           TAG: ${{ env.PUBLISH_TAG }}
-          PKG_KERNEL: registry.camsab.me:443/talos/kernel:${{ env.KERNEL_TAG }}
-          PKG_KERNEL: registry.camsab.me:443/talos/kernel:${{ env.KERNEL_TAG }}
-          #USERNAME: ${{ github.actor }}
+          PKG_KERNEL: ${{ env.REGISTRY}}/${{ env.USERNAME}}/kernel:${{ env.KERNEL_TAG }}
           PLATFORM: linux/arm64
           INSTALLER_ARCH: arm64
           PROGRESS: plain
@@ -102,12 +99,11 @@ jobs:
           make release-notes
           mv hack/release.sh.old hack/release.sh
 
-            talos-build:
   talos-build:
     runs-on: home-runners
     container:
       #### WARNING this image should be ${{ env.REGISTRY }}/imager:${{ env.PUBLISH_TAG }} but seems jobs can't access env so need to put it here manually 
-      image: ghcr.io/nberlee/imager:v1.8.2-1277d923e4
+      image: registry.camsab.me:443/talos/imager:v1.8.3-6.12.0
     permissions:
       contents: read # read the repository
     steps:
@@ -121,7 +117,6 @@ jobs:
           crane push /out/installer-arm64.tar ${{ env.REGISTRY}}/installer:${{ env.PUBLISH_TAG }}-rk3588
   talos-upload:
     runs-on: home-runners
-    needs: [talos-build]
     steps:
       - uses: actions/upload-artifact@v3
         with:
