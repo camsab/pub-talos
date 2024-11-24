@@ -1,4 +1,4 @@
-name: Talos Image
+name: Talos Installer - Manual
 
 on:
   workflow_dispatch:
