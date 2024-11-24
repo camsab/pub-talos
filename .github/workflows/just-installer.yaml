@@ -1,0 +1,30 @@
+name: Talos Image
+
+on:
+  workflow_dispatch:
+    
+env:
+  ORIGIN_REPO: siderolabs/talos
+  ORIGIN_TAG: v1.8.3
+  KERNEL_TAG: v1.8.3-6.12.1
+  RK3588_TAG: v1.8.3-6.12.1
+  SBC_TAG: v1.8.3-6.12.1
+  REGISTRY: registry.camsab.me:443
+  USERNAME: talos
+  LINUX_TOOLS: 2.40.2@sha256:3c3d2c76290fe1133d2472b01707b69bfdcc5b804a49e6370110001e23fa252a
+  ISCSI_TOOLS: v0.1.5@sha256:b3a3b65e1a20734c3fbc4655165b376bcd62d9593c3069fd0bf0f9296664cd38
+jobs:
+
+  talos-build:
+    runs-on: home-runners
+    container:
+      #### WARNING this image should be ${{ env.REGISTRY }}/imager:${{ env.PUBLISH_TAG }} but seems jobs can't access env so need to put it here manually 
+      image: registry.camsab.me:443/talos/imager:v1.8.3-6.12.1
+    permissions:
+      contents: read # read the repository
+    steps:
+      - name: Build an turing-rk1 installer
+        run: |
+          /bin/imager installer --arch arm64 --base-installer-image ${{ env.REGISTRY}}/${{ env.USERNAME}}/installer:${{ env.SBC_TAG}}-nosbclayer --system-extension-image ${{ env.REGISTRY}}/${{ env.USERNAME}}/rk3588:${{ env.RK3588_TAG }}  --system-extension-image ghcr.io/siderolabs/util-linux-tools:${{ env.LINUX_TOOLS}} --system-extension-image ghcr.io/siderolabs/iscsi-tools:${{ env.ISCSI_TOOLS}} --overlay-image ${{ env.REGISTRY}}/${{ env.USERNAME}}/sbc-turingrk1:${{ env.SBC_TAG }} --overlay-name=turingrk1
+          apk add crane
+          crane push /out/installer-arm64.tar ${{ env.REGISTRY}}/${{ env.USERNAME}}/installer:${{ env.RK3588_TAG }}-rk3588
